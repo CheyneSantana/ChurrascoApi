@@ -1,16 +1,15 @@
+using ChurrascoApi.Context;
+using ChurrascoApi.Interfaces;
+using ChurrascoApi.Models;
+using ChurrascoApi.Models.DB;
+using ChurrascoApi.Models.DTO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ChurrascoApi
 {
@@ -26,6 +25,13 @@ namespace ChurrascoApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<ChurrascostoreDatabaseSettings>(
+                Configuration.GetSection(nameof(ChurrascostoreDatabaseSettings)));
+
+            services.AddSingleton<IChurrascostoreDatabaseSettings>(
+                sp => sp.GetRequiredService<IOptions<ChurrascostoreDatabaseSettings>>().Value);
+
+            services.AddSingleton<ChurrascoContext>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
